@@ -354,6 +354,125 @@ svg.mini{width:100%;height:80px;display:block;}
   .feedback-modal{padding:24px;}
 }
 
+/* ============ MOBILE NAV TOGGLE ============ */
+.nav-toggle{
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  gap:5px;
+  width:38px;height:38px;
+  background:transparent;
+  border:1px solid var(--border);
+  border-radius:8px;
+  cursor:pointer;
+  padding:0;
+  flex-shrink:0;
+}
+.nav-toggle span{
+  display:block;
+  width:18px;height:2px;
+  background:var(--text);
+  margin:0 auto;
+  transition:transform .25s, opacity .25s;
+}
+.nav-toggle.active span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-toggle.active span:nth-child(2){opacity:0;}
+.nav-toggle.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ============ RESPONSIVE BREAKPOINTS ============ */
+
+/* Tablet / small laptop */
+@media(max-width:1100px){
+  .hero{grid-template-columns:1fr;}
+  .side-tags{display:none;}
+  .steps{grid-template-columns:1fr;}
+  .arrow{display:none;}
+  .dash-wrap{max-width:600px;margin:0 auto;}
+}
+
+/* Tablet nav still visible down to this point; switch to hamburger below */
+@media(max-width:900px){
+  header{padding:16px 20px;}
+  nav{
+    display:none;
+    position:absolute;
+    top:100%;left:0;right:0;
+    background:rgba(6,10,20,0.97);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    flex-direction:column;
+    align-items:flex-start;
+    gap:0;
+    padding:8px 20px 16px;
+    z-index:60;
+  }
+  nav.open{display:flex;}
+  nav a{
+    width:100%;
+    padding:12px 0;
+    border-bottom:1px solid var(--border);
+    font-size:15px;
+  }
+  nav a:last-child{border-bottom:none;}
+  nav a.active::after{display:none;}
+  .nav-toggle{display:flex;}
+  .cta-btn{font-size:13px;padding:9px 14px;}
+  .container{padding:0 20px;}
+}
+
+/* Phones */
+@media(max-width:700px){
+  .brand img{height:30px;width:30px;}
+  .brand-text .name{font-size:15px;}
+  .brand-text .tag{font-size:10px;}
+  .cta-btn{font-size:12px;padding:9px 12px;gap:5px;}
+  .cta-btn span, .cta-btn{white-space:nowrap;}
+
+  .hero{padding:40px 20px 60px;gap:28px;}
+  h1{font-size:32px;letter-spacing:-0.5px;}
+  .hero p.sub{font-size:14px;max-width:100%;}
+  .hero-ctas{flex-wrap:wrap;gap:10px;margin-bottom:32px;}
+  .hero-ctas .cta-btn, .hero-ctas .cta-outline{font-size:13px;padding:11px 16px;}
+  .feature-row{gap:16px 20px;}
+  .feature-pill .icon{width:30px;height:30px;font-size:14px;}
+  .feature-pill .label{font-size:12px;}
+  .feature-pill .label small{font-size:11px;}
+
+  .dash-wrap{max-width:100%;}
+  .dash{padding:14px;}
+  .dash-grid{grid-template-columns:1fr 1fr;gap:8px;}
+  .dash-stat{padding:8px;}
+  .dash-stat .v{font-size:14px;}
+  .dash-panels{grid-template-columns:1fr;}
+  .panel-box{min-height:auto;}
+
+  .process{padding:50px 20px;}
+  .process h2{font-size:26px;}
+  .process p{font-size:14px;margin-bottom:32px;}
+  .step{padding:22px 16px;margin:0;}
+  .step .circle{width:42px;height:42px;font-size:18px;margin-bottom:10px;}
+
+  .contact{padding:50px 20px 10px;}
+  .contact-grid{margin-top:32px;gap:14px;}
+  .contact-card{padding:24px 16px;}
+
+  .site-footer{padding:40px 20px 30px;}
+  .footer-tagline{font-size:20px;}
+
+  .feedback-modal{padding:20px;max-width:100%;border-radius:12px;}
+  .feedback-modal h2{font-size:18px;padding-right:24px;}
+}
+
+/* Very small phones */
+@media(max-width:400px){
+  h1{font-size:27px;}
+  .eyebrow{font-size:11px;padding:5px 10px;}
+  .dash-grid{grid-template-columns:1fr 1fr;}
+  .cta-btn{padding:9px 10px;font-size:11px;}
+  .hero-ctas .cta-outline{padding:11px 14px;font-size:12px;}
+}
+
+
 
 </style>
 </head>
@@ -367,7 +486,10 @@ svg.mini{width:100%;height:80px;display:block;}
       <span class="tag">Your Vision. Our Innovation.</span>
     </div>
   </div>
-  <nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <nav id="mainNav">
     <a href="#" class="active">Home</a>
     <a href="#about">About Us</a>
     <a href="#solutions">Solutions</a>
@@ -587,6 +709,35 @@ document.getElementById('feedbackForm').addEventListener('submit', async functio
     submitBtn.textContent = 'Submit Feedback';
   }
 });
+
+/* ============ MOBILE NAV TOGGLE LOGIC ============ */
+const navToggle = document.getElementById('navToggle');
+const mainNav = document.getElementById('mainNav');
+
+navToggle.addEventListener('click', function(){
+  const isOpen = mainNav.classList.toggle('open');
+  navToggle.classList.toggle('active', isOpen);
+  navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+});
+
+// Close mobile nav when a nav link is clicked (smooth-jump then collapse menu)
+mainNav.querySelectorAll('a').forEach(function(link){
+  link.addEventListener('click', function(){
+    mainNav.classList.remove('open');
+    navToggle.classList.remove('active');
+    navToggle.setAttribute('aria-expanded', 'false');
+  });
+});
+
+// Close mobile nav if user resizes back up past the breakpoint
+window.addEventListener('resize', function(){
+  if (window.innerWidth > 900 && mainNav.classList.contains('open')) {
+    mainNav.classList.remove('open');
+    navToggle.classList.remove('active');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }
+});
+
 </script>
 
 </body>
